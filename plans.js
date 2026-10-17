@@ -1,21 +1,5 @@
-/*
-  AG CORE PRICE MANAGEMENT
-  ========================
-  Update prices and plans in this file. You do not need to edit script.js.
-
-  To add a plan, copy one line and change the values:
-  { network: "MTN", data: "1GB", price: 500, validity: "7 days" },
-
-  Rules:
-  - network must be "MTN", "Airtel" or "Glo".
-  - price is a number only: 500, not "₦500".
-  - validity is text, for example "7 days".
-  - use a comma after every plan except the last one.
-  - confirm the selling price and availability before publishing.
-*/
 
 const AG_CORE_PLANS = [
-  // MTN — review these against your latest price list before publishing.
   { network: "MTN", data: "75MB", price: 75, validity: "1 day" },
   { network: "MTN", data: "230MB", price: 200, validity: "1 day" },
   { network: "MTN", data: "500MB", price: 250, validity: "1 day" },
@@ -35,7 +19,6 @@ const AG_CORE_PLANS = [
   { network: "MTN", data: "14.5GB", price: 4950, validity: "30 days" },
   { network: "MTN", data: "20GB", price: 4950, validity: "30 days" },
 
-  // Airtel — review these against your latest price list before publishing.
   { network: "Airtel", data: "75MB", price: 75, validity: "1 day" },
   { network: "Airtel", data: "110MB", price: 100, validity: "1 day" },
   { network: "Airtel", data: "230MB", price: 200, validity: "2 days" },
@@ -62,7 +45,6 @@ const AG_CORE_PLANS = [
   { network: "Airtel", data: "100GB", price: 20000, validity: "30 days" },
   { network: "Airtel", data: "160GB", price: 30000, validity: "30 days" },
 
-  // Glo — prices transcribed from the Glo flyer supplied by AG CORE.
   { network: "Glo", data: "200MB", price: 100, validity: "14 days" },
   { network: "Glo", data: "500MB", price: 220, validity: "30 days" },
   { network: "Glo", data: "1GB", price: 300, validity: "3 days" },
