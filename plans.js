@@ -1,0 +1,83 @@
+/*
+  AG CORE PRICE MANAGEMENT
+  ========================
+  Update prices and plans in this file. You do not need to edit script.js.
+
+  To add a plan, copy one line and change the values:
+  { network: "MTN", data: "1GB", price: 500, validity: "7 days" },
+
+  Rules:
+  - network must be "MTN", "Airtel" or "Glo".
+  - price is a number only: 500, not "₦500".
+  - validity is text, for example "7 days".
+  - use a comma after every plan except the last one.
+  - confirm the selling price and availability before publishing.
+*/
+
+const AG_CORE_PLANS = [
+  // MTN — review these against your latest price list before publishing.
+  { network: "MTN", data: "75MB", price: 75, validity: "1 day" },
+  { network: "MTN", data: "230MB", price: 200, validity: "1 day" },
+  { network: "MTN", data: "500MB", price: 250, validity: "1 day" },
+  { network: "MTN", data: "750MB", price: 460, validity: "5 days" },
+  { network: "MTN", data: "1GB", price: 420, validity: "7 days" },
+  { network: "MTN", data: "1GB", price: 430, validity: "30 days" },
+  { network: "MTN", data: "1.2GB", price: 750, validity: "7 days" },
+  { network: "MTN", data: "2GB", price: 850, validity: "30 days" },
+  { network: "MTN", data: "2.5GB", price: 780, validity: "2 days" },
+  { network: "MTN", data: "2.5GB", price: 930, validity: "7 days" },
+  { network: "MTN", data: "3GB", price: 1250, validity: "30 days" },
+  { network: "MTN", data: "3.2GB", price: 1000, validity: "2 days" },
+  { network: "MTN", data: "4GB", price: 1200, validity: "2 days" },
+  { network: "MTN", data: "5GB", price: 1550, validity: "30 days" },
+  { network: "MTN", data: "5.5GB", price: 1500, validity: "7 days" },
+  { network: "MTN", data: "11GB", price: 3500, validity: "7 days" },
+  { network: "MTN", data: "14.5GB", price: 4950, validity: "30 days" },
+  { network: "MTN", data: "20GB", price: 4950, validity: "30 days" },
+
+  // Airtel — review these against your latest price list before publishing.
+  { network: "Airtel", data: "75MB", price: 75, validity: "1 day" },
+  { network: "Airtel", data: "110MB", price: 100, validity: "1 day" },
+  { network: "Airtel", data: "230MB", price: 200, validity: "2 days" },
+  { network: "Airtel", data: "300MB", price: 300, validity: "2 days" },
+  { network: "Airtel", data: "500MB", price: 350, validity: "1 day" },
+  { network: "Airtel", data: "500MB", price: 500, validity: "7 days" },
+  { network: "Airtel", data: "1GB Social", price: 300, validity: "3 days" },
+  { network: "Airtel", data: "1GB", price: 800, validity: "7 days" },
+  { network: "Airtel", data: "1.5GB Social", price: 500, validity: "7 days" },
+  { network: "Airtel", data: "2GB", price: 650, validity: "2 days" },
+  { network: "Airtel", data: "3GB", price: 800, validity: "2 days" },
+  { network: "Airtel", data: "3.5GB", price: 1500, validity: "7 days" },
+  { network: "Airtel", data: "6GB", price: 2450, validity: "7 days" },
+  { network: "Airtel", data: "10GB", price: 2950, validity: "30 days" },
+  { network: "Airtel", data: "2GB", price: 1500, validity: "30 days" },
+  { network: "Airtel", data: "3GB", price: 2000, validity: "30 days" },
+  { network: "Airtel", data: "4GB", price: 2500, validity: "30 days" },
+  { network: "Airtel", data: "8GB", price: 3000, validity: "30 days" },
+  { network: "Airtel", data: "10GB", price: 4000, validity: "30 days" },
+  { network: "Airtel", data: "13GB", price: 5000, validity: "30 days" },
+  { network: "Airtel", data: "18GB", price: 6000, validity: "30 days" },
+  { network: "Airtel", data: "35GB", price: 9600, validity: "30 days" },
+  { network: "Airtel", data: "60GB", price: 15000, validity: "30 days" },
+  { network: "Airtel", data: "100GB", price: 20000, validity: "30 days" },
+  { network: "Airtel", data: "160GB", price: 30000, validity: "30 days" },
+
+  // Glo — prices transcribed from the Glo flyer supplied by AG CORE.
+  { network: "Glo", data: "200MB", price: 100, validity: "14 days" },
+  { network: "Glo", data: "500MB", price: 220, validity: "30 days" },
+  { network: "Glo", data: "1GB", price: 300, validity: "3 days" },
+  { network: "Glo", data: "1GB", price: 450, validity: "7 days" },
+  { network: "Glo", data: "1.5GB", price: 480, validity: "7 days" },
+  { network: "Glo", data: "750MB", price: 200, validity: "1 day" },
+  { network: "Glo", data: "2.6GB + 1.5GB night data", price: 980, validity: "30 days" },
+  { network: "Glo", data: "5GB + 3GB night data", price: 1450, validity: "30 days" },
+  { network: "Glo", data: "6.15GB + 3GB night data", price: 1950, validity: "30 days" },
+  { network: "Glo", data: "7.25GB + 3GB night data", price: 2400, validity: "30 days" },
+  { network: "Glo", data: "10GB + 2GB night data", price: 2950, validity: "30 days" },
+  { network: "Glo", data: "12.5GB + 2GB night data", price: 3900, validity: "30 days" },
+  { network: "Glo", data: "16GB + 2.5GB night data", price: 4900, validity: "30 days" },
+  { network: "Glo", data: "28GB + 2GB night data", price: 7800, validity: "30 days" },
+  { network: "Glo", data: "38GB + 2GB night data", price: 9500, validity: "30 days" },
+  { network: "Glo", data: "64GB + 2GB night data", price: 14500, validity: "30 days" },
+  { network: "Glo", data: "107GB + 2GB night data", price: 19000, validity: "30 days" }
+];

@@ -1,32 +1,210 @@
-const WHATSAPP_NUMBER = "2349120258280"; // Replace with your preferred business WhatsApp number if needed.
-const planImage = document.getElementById("planImage");
-document.querySelectorAll("[data-plan]").forEach(button => {
-  button.addEventListener("click", () => {
-    document.querySelectorAll("[data-plan]").forEach(tab => {
-      tab.classList.remove("active");
-      tab.setAttribute("aria-selected", "false");
-    });
-    button.classList.add("active");
-    button.setAttribute("aria-selected", "true");
-    const network = button.dataset.plan;
-    planImage.src = network === "airtel" ? "assets/airtel-data-plans.jpg" : "assets/mtn-data-plans.jpg";
-    planImage.alt = network.toUpperCase() + " data plan and price list";
+/*
+  AG CORE WEBSITE INTERACTIONS
+  ============================
+  This file controls the mobile menu, data-plan filters, plan cards and WhatsApp links.
+  To change plan prices, edit plans.js instead.
+*/
+
+// Use the primary business WhatsApp number without spaces or the + sign.
+const WHATSAPP_NUMBER = "2349120258280";
+
+// Keep track of the network selected in the data-plan section.
+let selectedNetwork = "MTN";
+
+// Find the main page elements once so we can reuse them.
+const planGrid = document.getElementById("planGrid");
+const emptyState = document.getElementById("emptyState");
+const searchInput = document.getElementById("planSearch");
+const validityFilter = document.getElementById("validityFilter");
+const sortSelect = document.getElementById("sortPlans");
+const recipientNumberInput = document.getElementById("recipientNumber");
+const menuToggle = document.getElementById("menuToggle");
+const mainNav = document.getElementById("mainNav");
+
+/** Format a price as Nigerian naira. */
+function formatPrice(price) {
+  return `₦${Number(price).toLocaleString("en-NG")}`;
+}
+
+/** Convert a plan's data amount into a number for largest-data sorting. */
+function getDataSize(dataDescription) {
+  const match = dataDescription.match(/[\d.]+/);
+  if (!match) return 0;
+
+  const amount = Number(match[0]);
+  if (dataDescription.toUpperCase().includes("GB")) return amount * 1000;
+  return amount;
+}
+
+/** Create a WhatsApp link with a pre-filled message. */
+function createWhatsAppLink(message) {
+  return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
+}
+
+/** Add the selected network's colour class to each plan card. */
+function getNetworkClass(network) {
+  return network.toLowerCase();
+}
+
+/** Return plans that match the chosen network, search and validity filters. */
+function getFilteredPlans() {
+  const searchTerm = searchInput.value.trim().toLowerCase();
+  const chosenValidity = validityFilter.value;
+
+  let matchingPlans = AG_CORE_PLANS.filter((plan) => {
+    const matchesNetwork = plan.network === selectedNetwork;
+    const searchableText = `${plan.data} ${plan.validity} ${plan.price} ${plan.network}`.toLowerCase();
+    const matchesSearch = searchableText.includes(searchTerm);
+    const matchesValidity = chosenValidity === "all" || plan.validity === chosenValidity;
+
+    return matchesNetwork && matchesSearch && matchesValidity;
   });
+
+  // Sorting only changes the displayed order; it does not change the saved prices.
+  if (sortSelect.value === "price-low") {
+    matchingPlans.sort((a, b) => a.price - b.price);
+  } else if (sortSelect.value === "price-high") {
+    matchingPlans.sort((a, b) => b.price - a.price);
+  } else if (sortSelect.value === "data-high") {
+    matchingPlans.sort((a, b) => getDataSize(b.data) - getDataSize(a.data));
+  }
+
+  return matchingPlans;
+}
+
+/** Build a plan card from one item in plans.js. */
+function createPlanCard(plan) {
+  const card = document.createElement("article");
+  card.className = `plan-card ${getNetworkClass(plan.network)}`;
+
+  const planDetails = document.createElement("div");
+  planDetails.className = "plan-details";
+
+  const networkLabel = document.createElement("span");
+  networkLabel.className = "network-label";
+  networkLabel.textContent = plan.network;
+
+  const dataName = document.createElement("h3");
+  dataName.textContent = plan.data;
+
+  const validity = document.createElement("p");
+  validity.className = "plan-validity";
+  validity.textContent = `Valid for ${plan.validity}`;
+
+  planDetails.append(networkLabel, dataName, validity);
+
+  const planFooter = document.createElement("div");
+  planFooter.className = "plan-footer";
+
+  const price = document.createElement("p");
+  price.className = "plan-price";
+  price.textContent = formatPrice(plan.price);
+
+  const orderButton = document.createElement("button");
+  orderButton.className = "button order-button";
+  orderButton.type = "button";
+  orderButton.textContent = "Order on WhatsApp →";
+  orderButton.addEventListener("click", () => orderPlan(plan));
+
+  planFooter.append(price, orderButton);
+  card.append(planDetails, planFooter);
+
+  return card;
+}
+
+/** Display all matching plans in the plan grid. */
+function renderPlans() {
+  const plans = getFilteredPlans();
+  planGrid.replaceChildren();
+
+  plans.forEach((plan) => {
+    planGrid.appendChild(createPlanCard(plan));
+  });
+
+  emptyState.hidden = plans.length > 0;
+}
+
+/** Validate the recipient's number and prepare the WhatsApp order. */
+function orderPlan(plan) {
+  const rawNumber = recipientNumberInput.value.trim();
+  const digitsOnly = rawNumber.replace(/\D/g, "");
+
+  // Accept common Nigerian local numbers and international +234 numbers.
+  const isValidNigerianNumber = /^0[789][01]\d{8}$/.test(digitsOnly) || /^234[789][01]\d{8}$/.test(digitsOnly);
+
+  if (!isValidNigerianNumber) {
+    recipientNumberInput.focus();
+    recipientNumberInput.setCustomValidity("Enter a valid Nigerian phone number, for example 08012345678.");
+    recipientNumberInput.reportValidity();
+    return;
+  }
+
+  recipientNumberInput.setCustomValidity("");
+
+  const message = [
+    "Hi AG CORE Services, I'd like to order this data plan:",
+    "",
+    `Network: ${plan.network}`,
+    `Data plan: ${plan.data}`,
+    `Validity: ${plan.validity}`,
+    `Listed price: ${formatPrice(plan.price)}`,
+    `Recipient phone number: ${digitsOnly}`,
+    "",
+    "Please confirm the current price and availability before I make payment."
+  ].join("\n");
+
+  window.open(createWhatsAppLink(message), "_blank", "noopener,noreferrer");
+}
+
+/** Select a network and update the highlighted tab. */
+function selectNetwork(network) {
+  selectedNetwork = network;
+
+  document.querySelectorAll("[data-network]").forEach((tab) => {
+    const isSelected = tab.dataset.network === network;
+    tab.classList.toggle("active", isSelected);
+    tab.setAttribute("aria-selected", String(isSelected));
+  });
+
+  renderPlans();
+}
+
+/** Attach click handlers to the MTN, Airtel and Glo tabs. */
+document.querySelectorAll(".tab[data-network]").forEach((tab) => {
+  tab.addEventListener("click", () => selectNetwork(tab.dataset.network));
 });
-document.querySelectorAll("[data-whatsapp]").forEach(link => {
-  const message = link.dataset.order || "Hi AG CORE Services, I’d like to order data. Please send me the current plans and prices.";
-  link.href = "https://wa.me/" + WHATSAPP_NUMBER + "?text=" + encodeURIComponent(message);
+
+// Re-render the plan cards whenever the customer changes a filter.
+searchInput.addEventListener("input", renderPlans);
+validityFilter.addEventListener("change", renderPlans);
+sortSelect.addEventListener("change", renderPlans);
+recipientNumberInput.addEventListener("input", () => recipientNumberInput.setCustomValidity(""));
+
+// Set up all general WhatsApp enquiry links.
+document.querySelectorAll("a[data-whatsapp]").forEach((link) => {
+  const message = link.dataset.message || "Hi AG CORE Services, I'd like to make an enquiry.";
+  link.href = createWhatsAppLink(message);
   link.target = "_blank";
   link.rel = "noopener noreferrer";
 });
-const menuToggle = document.getElementById("menuToggle");
-const nav = document.getElementById("mainNav");
+
+// Mobile navigation: open it with the menu button and close after a link is chosen.
 menuToggle.addEventListener("click", () => {
-  const open = nav.classList.toggle("open");
-  menuToggle.setAttribute("aria-expanded", String(open));
+  const isOpen = mainNav.classList.toggle("open");
+  menuToggle.setAttribute("aria-expanded", String(isOpen));
+  menuToggle.setAttribute("aria-label", isOpen ? "Close navigation" : "Open navigation");
 });
-nav.querySelectorAll("a").forEach(link => link.addEventListener("click", () => {
-  nav.classList.remove("open");
-  menuToggle.setAttribute("aria-expanded", "false");
-}));
+
+mainNav.querySelectorAll("a").forEach((link) => {
+  link.addEventListener("click", () => {
+    mainNav.classList.remove("open");
+    menuToggle.setAttribute("aria-expanded", "false");
+    menuToggle.setAttribute("aria-label", "Open navigation");
+  });
+});
+
+// Show the current year in the footer.
 document.getElementById("year").textContent = new Date().getFullYear();
+
+// Render MTN plans when the page first loads.
+renderPlans();
