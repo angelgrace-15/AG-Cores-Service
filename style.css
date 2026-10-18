@@ -77,7 +77,6 @@ summary {
   display: none !important;
 }
 
-/* Shared page width and section spacing */
 .section-wrap,
 .section {
   padding-inline: clamp(18px, 5vw, 76px);
